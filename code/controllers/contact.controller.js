@@ -9,6 +9,7 @@ module.exports = {
       const user = await db('new_table').insert({ name, email, message });
       res.json(user);
     } catch (e) {
+      console.log(e);
       next(e);
     }
   }

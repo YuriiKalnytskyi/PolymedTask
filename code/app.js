@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const { apiRouter } = require('./routes');
 const { constant: { PORT } } = require('./constants');
-const { errorMess: { UNKNOWN_ERROR } } = require('./errors');
+const { errorMess: { UNKNOWN_ERROR, ROUTE_NOT_FOUND } } = require('./errors');
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', apiRouter);
 app.use(_handleErrors);
+app.use('*', _notFoundHandler);
 
 // eslint-disable-next-line no-unused-vars
 function _handleErrors(err, req, res, next) {
@@ -27,6 +28,12 @@ function _handleErrors(err, req, res, next) {
       message: err.message || UNKNOWN_ERROR.message,
       customCode: err.customCode,
     });
+}
+function _notFoundHandler(err, req, res, next) {
+  next({
+    message: err.message || ROUTE_NOT_FOUND.message,
+    status: err.status || ROUTE_NOT_FOUND.code,
+  });
 }
 
 app.listen(PORT, () => {
